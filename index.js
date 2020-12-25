@@ -2,25 +2,42 @@
 
 const tickBase = function(){
     let Tserial = 0;
-    let Tfunctions = [];
+    let Tfunctions = {};
     let Thistory = [];
     let Tlast = {};
     let Tticks = 0;
     let TtickTimes = 100;
+    /*
+     * @param {string}
+     * @public 
+     * @return {bool}
+    */
     this.del=function(i){
-        delete Tfunctions[i];
+        if(typeof Tfunction[i] === 'undefined')
+            return false;
+        delete Tfunctions[i]; // its delet the original function this is the goal at now // may latter can change
+        return true;
     };
+    /* @param {function}
+     * @public
+     * @return {string}
+    */
     this.add=function(fun){
         let id = 'a'+Tserial.toString()+'a';
         Tfunctions[id] = fun;
         Tserial++;
+        return id;
     };
+    /*
+     * @param {string}
+     * @private
+    */
     const Terror = function(e){
         console.log(e);
     };
     /*
-      * @private
-      */
+     * @private
+    */
     const Ttick=function(){ // the performance is a priority, so no separated OOP in here
         //reset last
         Tlast = {

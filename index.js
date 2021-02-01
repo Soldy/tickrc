@@ -1,4 +1,12 @@
-// 
+/*
+ *  @Soldy\tickrc\2021.02.01\GPL3
+ */
+'use strict';
+
+/*
+ * @param {integer} limitIn //maximum size of package
+ * @prototype
+ */
 
 const tickBase = function(){
     let Tserial = 0;

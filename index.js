@@ -1,10 +1,9 @@
 /*
- *  @Soldy\tickrc\2021.02.01\GPL3
+ *  @Soldy\tickrc\2021.02.07\GPL3
  */
 'use strict';
 
 /*
- * @param {integer} limitIn //maximum size of package
  * @prototype
  */
 
@@ -49,7 +48,7 @@ const tickBase = function(){
     const Ttick=function(){ // the performance is a priority, so no separated OOP in here
         //reset last
         Tlast = {
-            start:(+new Date),
+            start:Date.now(),
             end:0
         };
         //increase serial
@@ -63,7 +62,7 @@ const tickBase = function(){
             }
 
         //end time
-        Tlast.end = (+new Date);
+        Tlast.end = Date.now();
         // add to history 
         Thistory.push({
             start:parseInt(Tlast.start),
@@ -77,7 +76,7 @@ const tickBase = function(){
 };
 
 
-exports.tick = new tickBase();
+exports.base = tickBase;
 
 
 

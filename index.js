@@ -31,9 +31,27 @@ const TickBase = function(setup_in){
     };
     /*
      * @public
+     * @return {bool}
     */
-    this.run=function(){
+    this.start=function(){
+        if(_t_running)
+            return false;
+        _t_running = true;
+        _t_stop = false;
         _tTick();
+        return true;
+    };
+    /*
+     * @public 
+     * @return {bool}
+    */
+    this.stop=function(){
+        if(_t_stop === true)
+            return true;
+        if(_t_running === false)
+            return false;
+        _t_stop = true;
+        return true;
     };
     /*
      * @param {string}
@@ -68,12 +86,23 @@ const TickBase = function(setup_in){
      *
      */
     let _t_serial = 0;
+    let _t_stop = false;
+    let _t_running = false;
     let _t_functions = {};
     let _t_history = [];
     let _t_last = {};
     let _t_ticks = 0;
     let _t_tick_time = _setup.get('tick_time');
     let _t_timeout ;
+    /*
+     * @param {string}
+     * @private
+    */
+    const _tStop = function(e){
+        _t_stop = false;
+        _t_running = false;
+
+    };
     /*
      * @param {string}
      * @private
@@ -85,6 +114,8 @@ const TickBase = function(setup_in){
      * @private
     */
     const _tTick=function(){ // the performance is a priority, so no separated OOP in here
+        if(_t_stop)
+            return _tStop();
         //reset last
         _t_last = {
             start:Date.now(),

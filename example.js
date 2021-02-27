@@ -7,9 +7,12 @@ tick.add(
     ()=>{
         console.log(test);
         test ++;
+        tick.set(
+            'tick_time',
+            2**test
+        );
         if(test >10 )
-            process.exit();
+           tick.stop();
     }
 );
-tick.run();
-tick.set('tick_time',1000);
+tick.start();

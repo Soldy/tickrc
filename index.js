@@ -35,6 +35,20 @@ const TickBase = function(setup_in){
     this.run=function(){
         _tTick();
     };
+    /*
+     * @param {string}
+     * @public 
+     * @return {bool}
+    */
+    this.set=function(type, value){
+        let out = _setup.set(
+            type,
+            value
+        );
+        if(out)
+            _booster();
+        return out;
+    };
     /* @param {function}
      * @public
      * @return {string}
@@ -45,7 +59,7 @@ const TickBase = function(setup_in){
             'type'    : 'integer',
             'min'     : 1,
             'max'     : 200000,
-            'default' : 100
+            'default' : 1000
         },
     });
     /*
@@ -58,7 +72,7 @@ const TickBase = function(setup_in){
     let _t_history = [];
     let _t_last = {};
     let _t_ticks = 0;
-    let _t_tickTimes = _setup.get('_tick_times');
+    let _t_tick_time = _setup.get('tick_time');
     let _t_timeout ;
     /*
      * @param {string}
@@ -95,7 +109,7 @@ const TickBase = function(setup_in){
         });
         _t_timeout = setTimeout(
             _tTick,
-            (   _t_tickTimes - Math.abs(
+            (   _t_tick_time - Math.abs(
                     _t_last.end - _t_last.start
                 )
             )
@@ -105,7 +119,11 @@ const TickBase = function(setup_in){
          if(typeof setup_in === 'undefined')
              return false;
          _setup.setup(setup_in);
-         _t_tickTimes = _setup.get('_tick_times');
+         _booster();
+    }
+    const _booster = function(){
+         _t_tick_time = _setup.get('tick_time');
+
     }
     _reSetup(setup_in);
 };

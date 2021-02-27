@@ -3,26 +3,20 @@
  */
 'use strict';
 
+const setupBase = (require('setuprc')).base;
 /*
  * @prototype
  */
-
-const tickBase = function(){
-    let Tserial = 0;
-    let Tfunctions = {};
-    let Thistory = [];
-    let Tlast = {};
-    let Tticks = 0;
-    let TtickTimes = 100;
+const TickBase = function(setup_in){
     /*
      * @param {string}
      * @public 
      * @return {bool}
     */
     this.del=function(i){
-        if(typeof Tfunction[i] === 'undefined')
+        if(typeof _t_function[i] === 'undefined')
             return false;
-        delete Tfunctions[i]; // its delet the original function this is the goal at now // may latter can change
+        delete _t_functions[i];
         return true;
     };
     /* @param {function}
@@ -30,53 +24,94 @@ const tickBase = function(){
      * @return {string}
     */
     this.add=function(fun){
-        let id = 'a'+Tserial.toString()+'a';
-        Tfunctions[id] = fun;
-        Tserial++;
+        let id = 'a'+_t_serial.toString()+'a';
+        _t_functions[id] = fun;
+        _t_serial++;
         return id;
     };
+    /*
+     * @public
+    */
+    this.run=function(){
+        _tTick();
+    };
+    /* @param {function}
+     * @public
+     * @return {string}
+    */
+
+    let _setup = new setupBase({
+        'tick_time':{
+            'type'    : 'integer',
+            'min'     : 1,
+            'max'     : 200000,
+            'default' : 100
+        },
+    });
+    /*
+     *
+     * setup init 
+     *
+     */
+    let _t_serial = 0;
+    let _t_functions = {};
+    let _t_history = [];
+    let _t_last = {};
+    let _t_ticks = 0;
+    let _t_tickTimes = _setup.get('_tick_times');
+    let _t_timeout ;
     /*
      * @param {string}
      * @private
     */
-    const Terror = function(e){
+    const _tError = function(e){
         console.log(e);
     };
     /*
      * @private
     */
-    const Ttick=function(){ // the performance is a priority, so no separated OOP in here
+    const _tTick=function(){ // the performance is a priority, so no separated OOP in here
         //reset last
-        Tlast = {
+        _t_last = {
             start:Date.now(),
             end:0
         };
         //increase serial
-        Tticks++;
+        _t_ticks++;
         // start time
-        for(let i in Tfunctions)
+        for(let i in _t_functions)
             try{
-                Tfunctions[i]();
+                _t_functions[i]();
             }catch(e){
-                Terror(e);
+                _tError(e);
             }
 
         //end time
-        Tlast.end = Date.now();
+        _t_last.end = Date.now();
         // add to history 
-        Thistory.push({
-            start:parseInt(Tlast.start),
-            end:parseInt(Tlast.end)
+        _t_history.push({
+            start:parseInt(_t_last.start),
+            end:parseInt(_t_last.end)
         });
-        setTimeout(
-            Ttick,
-            (TtickTimes-Math.abs(Tlast.end-Tlast.start))
+        _t_timeout = setTimeout(
+            _tTick,
+            (   _t_tickTimes - Math.abs(
+                    _t_last.end - _t_last.start
+                )
+            )
         );
     };
+    const _reSetup = function(setup_in){
+         if(typeof setup_in === 'undefined')
+             return false;
+         _setup.setup(setup_in);
+         _t_tickTimes = _setup.get('_tick_times');
+    }
+    _reSetup(setup_in);
 };
 
 
-exports.base = tickBase;
+exports.base = TickBase;
 
 
 

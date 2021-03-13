@@ -7,10 +7,17 @@ tick.add(
     ()=>{
         console.log(test);
         test ++;
-        tick.set(
-            'tick_time',
-            2**test
+        console.log(
+            tick.set(
+               'tick_time',
+               2**test
+            )
         );
+        if(test > 8)
+            tick.set(
+                'changeable',
+                false
+            );
         if(test >10 )
            tick.stop();
     }

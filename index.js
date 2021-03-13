@@ -59,6 +59,8 @@ const TickBase = function(setup_in){
      * @return {bool}
     */
     this.set=function(type, value){
+        if(!_setup.get('changeable'))
+             return false;
         let out = _setup.set(
             type,
             value
@@ -79,6 +81,10 @@ const TickBase = function(setup_in){
             'max'     : 200000,
             'default' : 1000
         },
+        'changeable': {
+             'type'    : 'boolean',
+             'default' : true
+        }
     });
     /*
      *
@@ -140,7 +146,8 @@ const TickBase = function(setup_in){
         });
         _t_timeout = setTimeout(
             _tTick,
-            (   _t_tick_time - Math.abs(
+            (   
+                _t_tick_time - Math.abs(
                     _t_last.end - _t_last.start
                 )
             )

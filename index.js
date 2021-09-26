@@ -21,7 +21,12 @@ const $setup = new (require('setuprc')).base({
     'error_throw' : {
         'type'    : 'boolean',
         'default' : false
-    }
+    },
+    'history' : {
+        'type'    : 'boolean',
+        'default' : false
+    },
+
 });
 
 /*
@@ -168,7 +173,11 @@ const TickBase = function(setup_in){
      * @var {boolean}
      */
     let _t_booster_error_throw = false;
-
+    /*
+     * @private
+     * @var {boolean}
+    */
+    let _t_booster_history = false;
 
     /*
      * @param {string}
@@ -213,10 +222,11 @@ const TickBase = function(setup_in){
         //end time
         _t_last.end = Date.now();
         // add to history 
-        _t_history.push({
-            start:parseInt(_t_last.start),
-            end:parseInt(_t_last.end)
-        });
+        if(_t_booster_history)
+            _t_history.push({
+                start:parseInt(_t_last.start),
+                end:parseInt(_t_last.end)
+            });
         _t_timeout = setTimeout(
             _tTick,
             (
@@ -236,6 +246,7 @@ const TickBase = function(setup_in){
          _t_tick_time = $setup.get('tick_time');
          _t_booster_error_log = $setup.get('error_log');
          _t_booster_error_throw = $setup.get('error_throw');
+         _t_booster_history = $setup.get('history');
 
     }
     _reSetup(setup_in);

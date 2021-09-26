@@ -3,7 +3,27 @@
  */
 'use strict';
 
-const setupBase = (require('setuprc')).base;
+const $setup = new (require('setuprc')).base({
+    'tick_time' : {
+        'type'    : 'integer',
+        'min'     : 1,
+        'max'     : 200000,
+        'default' : 1000
+    },
+    'changeable' : {
+        'type'    : 'boolean',
+        'default' : true
+    },
+    'error_log' : {
+        'type'    : 'boolean',
+        'default' : false
+    },
+    'error_throw' : {
+        'type'    : 'boolean',
+        'default' : false
+    }
+});
+
 /*
  * @prototype
  */
@@ -24,7 +44,7 @@ const TickBase = function(setup_in){
      * @return {string}
     */
     this.add=function(fun){
-        let id = 'a'+_t_serial.toString()+'a';
+        const id = 'a'+_t_serial.toString()+'a';
         _t_functions[id] = fun;
         _t_serial++;
         return id;
@@ -59,9 +79,9 @@ const TickBase = function(setup_in){
      * @return {bool}
     */
     this.set=function(type, value){
-        if(!_setup.get('changeable'))
+        if(!$setup.get('changeable'))
              return false;
-        let out = _setup.set(
+        let out = $setup.set(
             type,
             value
         );
@@ -69,37 +89,87 @@ const TickBase = function(setup_in){
             _booster();
         return out;
     };
-    /* @param {function}
-     * @public
-     * @return {string}
-    */
-
-    let _setup = new setupBase({
-        'tick_time':{
-            'type'    : 'integer',
-            'min'     : 1,
-            'max'     : 200000,
-            'default' : 1000
-        },
-        'changeable': {
-             'type'    : 'boolean',
-             'default' : true
-        }
-    });
     /*
      *
      * setup init 
      *
      */
+    /*
+     * tickable function serial counter
+     * @private
+     * @var {integer}
+    */
     let _t_serial = 0;
+    /*
+     * stop signal. 
+     * the next signal will stop the ticking.
+     * @private
+     * @var {boolean}
+     *
+    */
     let _t_stop = false;
+    /* running indicator. true if the ticking are running
+     * @private
+     * @var {boolean}
+     */
     let _t_running = false;
+    /*
+     * function dictonary.
+     * @private
+     * @var {object}
+     */
     let _t_functions = {};
+    /*
+     * ticking history
+     * @private
+     * @var {object}
+     */
     let _t_history = [];
+    /*
+     * error log
+     * @private
+     * @var {array}
+     *
+     */
+    let _t_errors = [];
+    /*
+     * last event time log
+     * @private
+     * @var {object}
+     */
     let _t_last = {};
+    /*
+     * tick counter
+     * @private
+     * @var {integer}
+     */
     let _t_ticks = 0;
-    let _t_tick_time = _setup.get('tick_time');
+    /*
+     * tick timing
+     * @private
+     * @var {integer}
+     */
+    let _t_tick_time = 1000;
+    /*
+     * tick time out
+     * @private
+     * @var {integer}
+     */
     let _t_timeout ;
+    /*
+     * tick error log booster
+     * @private
+     * @var {boolean}
+     */
+    let _t_booster_error_log = false;
+    /*
+     * tick error log throw
+     * @private
+     * @var {boolean}
+     */
+    let _t_booster_error_throw = false;
+
+
     /*
      * @param {string}
      * @private
@@ -114,7 +184,10 @@ const TickBase = function(setup_in){
      * @private
     */
     const _tError = function(e){
-        console.log(e);
+         if(_t_booster_error_log)
+              _t_errors.push(e);
+         if(_t_booster_error_throw)
+              throw e;
     };
     /*
      * @private
@@ -146,7 +219,7 @@ const TickBase = function(setup_in){
         });
         _t_timeout = setTimeout(
             _tTick,
-            (   
+            (
                 _t_tick_time - Math.abs(
                     _t_last.end - _t_last.start
                 )
@@ -156,11 +229,13 @@ const TickBase = function(setup_in){
     const _reSetup = function(setup_in){
          if(typeof setup_in === 'undefined')
              return false;
-         _setup.setup(setup_in);
+         $setup.setup(setup_in);
          _booster();
     }
     const _booster = function(){
-         _t_tick_time = _setup.get('tick_time');
+         _t_tick_time = $setup.get('tick_time');
+         _t_booster_error_log = $setup.get('error_log');
+         _t_booster_error_throw = $setup.get('error_throw');
 
     }
     _reSetup(setup_in);

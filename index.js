@@ -236,12 +236,19 @@ const TickBase = function(setup_in){
             )
         );
     };
+    /*
+     * @param {object}
+     * @private
+    */
     const _reSetup = function(setup_in){
          if(typeof setup_in === 'undefined')
              return false;
          $setup.setup(setup_in);
          _booster();
     }
+    /*
+     * @private
+    */
     const _booster = function(){
          _t_tick_time = $setup.get('tick_time');
          _t_booster_error_log = $setup.get('error_log');
@@ -249,6 +256,7 @@ const TickBase = function(setup_in){
          _t_booster_history = $setup.get('history');
 
     }
+    //init
     _reSetup(setup_in);
 };
 

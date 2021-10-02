@@ -39,44 +39,28 @@ const TickBase = function(setup_in){
      * @return {bool}
     */
     this.del=function(i){
-        if(typeof _t_function[i] === 'undefined')
-            return false;
-        delete _t_functions[i];
-        return true;
+        return _tDel(i);
     };
     /* @param {function}
      * @public
      * @return {string}
     */
     this.add=function(fun){
-        const id = 'a'+_t_serial.toString()+'a';
-        _t_functions[id] = fun;
-        _t_serial++;
-        return id;
+        return _tAdd(fun);
     };
     /*
      * @public
      * @return {bool}
     */
     this.start=function(){
-        if(_t_running)
-            return false;
-        _t_running = true;
-        _t_stop = false;
-        _tTick();
-        return true;
+        return _tStart();
     };
     /*
      * @public 
      * @return {bool}
     */
     this.stop=function(){
-        if(_t_stop === true)
-            return true;
-        if(_t_running === false)
-            return false;
-        _t_stop = true;
-        return true;
+        return _tStop();
     };
     /*
      * @param {string}
@@ -84,15 +68,7 @@ const TickBase = function(setup_in){
      * @return {bool}
     */
     this.set=function(type, value){
-        if(!$setup.get('changeable'))
-             return false;
-        let out = $setup.set(
-            type,
-            value
-        );
-        if(out)
-            _booster();
-        return out;
+        return _tStep(type,value);
     };
     /*
      *
@@ -178,15 +154,65 @@ const TickBase = function(setup_in){
      * @var {boolean}
     */
     let _t_booster_history = false;
-
     /*
      * @param {string}
      * @private
+     * @return {bool}
     */
-    const _tStop = function(e){
+    const _tDel=function(i){
+        if(typeof _t_function[i] === 'undefined')
+            return false;
+        delete _t_functions[i];
+        return true;
+    };
+    /* @param {function}
+     * @private
+     * @return {string}
+    */
+    const _tAdd=function(fun){
+        const id = 'a'+_t_serial.toString()+'a';
+        _t_functions[id] = fun;
+        _t_serial++;
+        return id;
+    };
+    /*
+     * @private
+     * @return {bool}
+    */
+    const _tStart=function(){
+        if(_t_running)
+            return false;
+        _t_running = true;
         _t_stop = false;
-        _t_running = false;
-
+        _tTick();
+        return true;
+    };
+    /*
+     * @private
+     * @return {bool}
+    */
+    const _tStop=function(){
+        if(_t_stop === false)
+            return _t_stop = true;
+        if(_t_running === true)
+            return _t_running = false;
+        return true;
+    };
+    /*
+     * @param {string}
+     * @private
+     * @return {bool}
+    */
+    const _tSet=function(type, value){
+        if(!$setup.get('changeable'))
+             return false;
+        let out = $setup.set(
+            type,
+            value
+        );
+        if(out)
+            _booster();
+        return out;
     };
     /*
      * @param {string}
@@ -230,7 +256,7 @@ const TickBase = function(setup_in){
         _t_timeout = setTimeout(
             _tTick,
             (
-                _t_tick_time - Math.abs(
+                $setup.get('tick_time') - Math.abs(
                     _t_last.end - _t_last.start
                 )
             )

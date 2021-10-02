@@ -68,7 +68,7 @@ const TickBase = function(setup_in){
      * @return {bool}
     */
     this.set=function(type, value){
-        return _tStep(type,value);
+        return _tSet(type,value);
     };
     /*
      *

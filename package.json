@@ -4,7 +4,8 @@
   "description": "ticking engine",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "node example.js"
+
   },
   "repository": {
     "type": "git",
@@ -12,7 +13,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "nanoTest": "^0.9.9-beta17c"
+    "nanoTest": "^0.9.9-beta26"
   },
   "keywords": [],
   "author": "Soldy <npmjs@gidigi.com> (http://gidigi.com)",

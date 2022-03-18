@@ -11,7 +11,7 @@
 ## init
 
 ```javascript
-const tick  = new (require('./index.js')).base({
+const tick  = new (require('tickrc')).base({
     'tick_time' :100
 });
 
